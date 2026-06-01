@@ -38,14 +38,13 @@ export default function DataUpload() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 300));
       setProgress(45);
-      const res = await apiClient.post('/api/upload/upload', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await apiClient.post('/api/upload/upload', form);
       setProgress(100);
       setMessage(`Uploaded ${res.data.name} with ${res.data.rows} rows.`);
       setFiles([]);
-    } catch (err) {
-      setMessage('Upload failed. Please try again.');
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.detail || err?.message || 'Upload failed. Please try again.';
+      setMessage(errorMessage);
     } finally {
       setUploading(false);
       setTimeout(() => setProgress(0), 600);
