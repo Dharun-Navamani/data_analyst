@@ -25,8 +25,11 @@ This repository contains a React frontend and a FastAPI backend for an AI dashbo
 
 ## Vercel deployment
 
-The frontend can be deployed directly to Vercel.
+This repository is a monorepo with separate frontend and backend folders.
 
+### Deploy frontend only
+
+If you only want to host the UI on Vercel:
 1. Connect your GitHub repository to Vercel.
 2. Set the project root to `frontend`.
 3. Configure the build command:
@@ -36,7 +39,17 @@ The frontend can be deployed directly to Vercel.
 5. Add an environment variable in Vercel:
    - `VITE_API_BASE_URL`: URL of your deployed backend API
 
-> Note: This repo currently contains a FastAPI backend. Vercel can deploy the frontend to a static site, but the backend should be hosted separately on a Python-capable provider (for example Railway, Render, or a VPS).
+### Deploy frontend and backend together
+
+A monorepo `vercel.json` is included to declare both services:
+- `frontend` service uses the `frontend` folder
+- `backend` service uses the `backend` folder
+
+However, the backend is a FastAPI app and may require a separate Python-capable host for production data storage. If you see deployment errors, the safest option is:
+- deploy `frontend` on Vercel
+- deploy `backend` on a Python host such as Railway, Render, or a VPS
+
+> Note: The current `vercel.json` supports Vercel multi-service deployment, but the backend still depends on a backend database configuration and may need a production DB host instead of local SQLite.
 
 ## GitHub Actions CI
 
