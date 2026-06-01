@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+pydantic-settings
+alembic
+pandas
+numpy
+openai
+langchain
+python-dotenv
+psycopg2-binary
+pytest
