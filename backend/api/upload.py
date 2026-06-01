@@ -13,6 +13,7 @@ UPLOAD_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'uploads')
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 ALLOWED = ['.csv', '.tsv', '.json', '.xls', '.xlsx']
+MAX_UPLOAD_SIZE = int(os.getenv('MAX_UPLOAD_SIZE', 50 * 1024 * 1024))  # 50 MB default
 
 async def _save_file_and_parse(file: UploadFile):
     filename = file.filename
@@ -23,20 +24,41 @@ async def _save_file_and_parse(file: UploadFile):
     unique_name = f"{uuid.uuid4().hex}_{filename}"
     dest_path = os.path.join(UPLOAD_DIR, unique_name)
 
+    # Stream file to disk to avoid large memory spikes
     with open(dest_path, 'wb') as f:
-        content = await file.read()
-        f.write(content)
+        while True:
+            chunk = await file.read(1024 * 1024)
+            if not chunk:
+                break
+            f.write(chunk)
 
-    # Use pandas to read and infer
-    if ext in ('.csv', '.tsv'):
-        sep = '\t' if ext == '.tsv' else ','
-        df = pd.read_csv(dest_path, sep=sep)
-    elif ext in ('.xls', '.xlsx'):
-        df = pd.read_excel(dest_path)
-    elif ext == '.json':
-        df = pd.read_json(dest_path)
-    else:
-        raise HTTPException(status_code=400, detail="Unsupported format")
+    # enforce max size
+    try:
+        size = os.path.getsize(dest_path)
+    except OSError:
+        size = 0
+    if size > MAX_UPLOAD_SIZE:
+        os.remove(dest_path)
+        raise HTTPException(status_code=413, detail=f"Uploaded file is too large ({size} bytes). Max is {MAX_UPLOAD_SIZE} bytes")
+
+    # Use pandas to read and infer. Wrap in try/except to return useful errors.
+    try:
+        if ext in ('.csv', '.tsv'):
+            sep = '\t' if ext == '.tsv' else ','
+            df = pd.read_csv(dest_path, sep=sep)
+        elif ext in ('.xls', '.xlsx'):
+            df = pd.read_excel(dest_path)
+        elif ext == '.json':
+            df = pd.read_json(dest_path)
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported format")
+    except Exception as e:
+        # remove the saved file on parse failure to save space
+        try:
+            os.remove(dest_path)
+        except Exception:
+            pass
+        raise HTTPException(status_code=400, detail=f"Failed to parse uploaded file: {str(e)}")
 
     # Basic preview and schema
     preview = df.head(5).to_json(orient='records')
