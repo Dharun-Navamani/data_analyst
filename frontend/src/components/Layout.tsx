@@ -45,6 +45,17 @@ export default function Layout() {
               <BrainCircuit className="h-5 w-5" />
               AI Insights
             </NavLink>
+            <NavLink
+              to="/upload"
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  isActive ? 'bg-blue-50 text-blue-700 shadow-sm' : 'text-slate-700 hover:bg-slate-100'
+                }`
+              }
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 10l5-5 5 5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 5v12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Data Upload
+            </NavLink>
           </nav>
 
           <div className="mt-auto pt-6 border-t border-slate-200">
