@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.dashboard import router as dashboard_router
 from api.ai_analysis import router as ai_analysis_router
+from api.upload import router as upload_router
 from core.database import engine, Base
 from models import DailyMetric
 
@@ -62,6 +63,7 @@ app.add_middleware(
 
 app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(ai_analysis_router, prefix="/api/ai", tags=["AI Analysis"])
+app.include_router(upload_router, prefix="/api/upload", tags=["Upload"])
 
 @app.get("/")
 async def root():
