@@ -1,52 +1,91 @@
-import { Link, Outlet } from 'react-router-dom';
-import { LayoutDashboard, BrainCircuit, Settings, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { NavLink, Outlet } from 'react-router-dom';
+import { LayoutDashboard, BrainCircuit, Settings, LogOut, Menu } from 'lucide-react';
 
 export default function Layout() {
-  return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-            <BrainCircuit className="w-8 h-8" />
-            AI Dashboard
-          </h1>
-        </div>
-        <nav className="flex-1 p-4 space-y-2">
-          <Link to="/" className="flex items-center gap-3 px-4 py-3 text-gray-700 bg-gray-50 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors">
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="font-medium">Dashboard</span>
-          </Link>
-          <Link to="/insights" className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
-            <BrainCircuit className="w-5 h-5" />
-            <span className="font-medium">AI Insights</span>
-          </Link>
-        </nav>
-        <div className="p-4 border-t border-gray-200">
-          <button className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg w-full transition-colors">
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
-          </button>
-        </div>
-      </aside>
+  const [open, setOpen] = useState(false);
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 h-16 flex items-center px-8 justify-between">
-          <h2 className="text-xl font-semibold text-gray-800">Welcome back, Admin</h2>
-          <div className="flex items-center gap-4">
-             <button className="p-2 hover:bg-gray-100 rounded-full">
-               <Settings className="w-5 h-5 text-gray-600" />
-             </button>
-             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-               A
-             </div>
+  return (
+    <div className="min-h-screen bg-slate-100">
+      <div className="flex h-full">
+        <aside className={`fixed inset-y-0 left-0 z-50 w-72 transform bg-white border-r border-slate-200 p-6 transition-transform duration-300 lg:relative lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'} lg:block`}>
+          <div className="mb-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <BrainCircuit className="h-8 w-8 text-blue-600" />
+              <div>
+                <p className="text-lg font-semibold text-slate-900">AI Dashboard</p>
+                <p className="text-sm text-slate-500">Analytics & insights</p>
+              </div>
+            </div>
+            <button className="lg:hidden p-2 rounded-md bg-slate-100" onClick={() => setOpen(false)}>
+              <LogOut className="h-5 w-5 text-slate-700" />
+            </button>
           </div>
-        </header>
-        <div className="flex-1 overflow-auto p-8">
-          <Outlet />
-        </div>
-      </main>
+
+          <nav className="space-y-2">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  isActive ? 'bg-blue-50 text-blue-700 shadow-sm' : 'text-slate-700 hover:bg-slate-100'
+                }`
+              }
+            >
+              <LayoutDashboard className="h-5 w-5" />
+              Dashboard
+            </NavLink>
+            <NavLink
+              to="/insights"
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  isActive ? 'bg-blue-50 text-blue-700 shadow-sm' : 'text-slate-700 hover:bg-slate-100'
+                }`
+              }
+            >
+              <BrainCircuit className="h-5 w-5" />
+              AI Insights
+            </NavLink>
+          </nav>
+
+          <div className="mt-auto pt-6 border-t border-slate-200">
+            <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-200">
+              <LogOut className="h-5 w-5" />
+              Logout
+            </button>
+          </div>
+        </aside>
+
+        <main className="flex-1 lg:ml-72">
+          <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur-sm lg:px-8">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <button
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 lg:hidden"
+                  onClick={() => setOpen(true)}
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+                <div>
+                  <p className="text-lg font-semibold text-slate-900">Welcome back, Admin</p>
+                  <p className="text-sm text-slate-500">Your AI dashboard is ready to explore.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100">
+                  <Settings className="h-5 w-5" />
+                </button>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-sm">
+                  A
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div className="min-h-[calc(100vh-86px)] px-6 py-6 lg:px-8">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

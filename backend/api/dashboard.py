@@ -38,7 +38,9 @@ async def get_chart_data(db: AsyncSession = Depends(get_db)):
     chart_data = [
         {
             "name": metric.date.strftime("%b"),
-            "value": int(metric.total_users),
+            "users": metric.total_users,
+            "revenue": round(metric.revenue, 2),
+            "active_sessions": metric.active_sessions,
         }
         for metric in metrics[-6:]
     ]
